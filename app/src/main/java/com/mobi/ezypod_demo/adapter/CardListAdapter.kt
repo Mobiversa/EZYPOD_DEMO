@@ -4,19 +4,21 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.widget.AppCompatImageView
+import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.recyclerview.widget.RecyclerView
+import com.mobi.ezypod.service.network.CardWallet
+import com.mobi.ezypod_demo.CardListActivity
 import com.mobi.ezypod_demo.R
-import kotlin.collections.ArrayList
+import kotlinx.android.synthetic.main.list_cards.view.*
 
 class CardListAdapter : RecyclerView.Adapter<CardListAdapter.ViewHolder> {
 
 
     var context: Context? = null
-    var dataList: List<Int> = ArrayList()
+    var dataList: List<CardWallet> = ArrayList()
 
-    constructor(context: Context,categoryList: ArrayList<Int>){
+    constructor(context: Context, categoryList: ArrayList<CardWallet>){
         this.dataList = categoryList
         this.context = context
     }
@@ -33,13 +35,25 @@ class CardListAdapter : RecyclerView.Adapter<CardListAdapter.ViewHolder> {
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-//        holder.productNameTxt.text = "Product Name $position"
+        holder.text_walletId.text = "Wallet Id : "+dataList[position].walletId
+        holder.text_maskedPan.text = "Masked Pan : "+dataList[position].maskedPan
+        holder.text_expDate.text = "Exp Date : "+dataList[position].expDate
+
+        holder.button_pay.setOnClickListener {
+            (context as CardListActivity).payByCard(dataList[position].walletId)
+        }
+        holder.button_delete.setOnClickListener {
+            (context as CardListActivity).deleteCard(dataList[position].walletId)
+        }
 
     }
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-//        val productNameTxt: AppCompatTextView = itemView.product_name_txt
-//        val categoryImg: AppCompatImageView = itemView.new_arrival_product_image
+        val text_walletId: AppCompatTextView = itemView.text_walletId
+        val text_maskedPan: AppCompatTextView = itemView.text_maskedPan
+        val text_expDate: AppCompatTextView = itemView.text_expDate
+        val button_pay: AppCompatButton = itemView.button_pay
+        val button_delete: AppCompatButton = itemView.button_delete
     }
 }

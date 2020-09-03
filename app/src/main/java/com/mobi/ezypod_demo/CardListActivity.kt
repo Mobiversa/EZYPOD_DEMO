@@ -5,9 +5,15 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
+import android.widget.Toast
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.mobi.ezypod.Common
 import com.mobi.ezypod.Payment
 import com.mobi.ezypod.service.network.*
+import com.mobi.ezypod_demo.adapter.CardListAdapter
+import kotlinx.android.synthetic.main.activity_card_list.*
 
 class CardListActivity : AppCompatActivity() {
 
@@ -19,9 +25,23 @@ class CardListActivity : AppCompatActivity() {
     var username = "Mobiversa" // for demo
     val requestMap: HashMap<String, String> = HashMap()
 
+    private lateinit var cardListAdapter: CardListAdapter
+    private var cardList : ArrayList<CardWallet> = ArrayList()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_card_list)
+
+        card_list_rec.layoutManager =
+            LinearLayoutManager(applicationContext, RecyclerView.VERTICAL, false)
+        card_list_rec.addItemDecoration(
+            DividerItemDecoration(
+                applicationContext,
+                LinearLayoutManager.VERTICAL
+            )
+        )
+        cardListAdapter = CardListAdapter( applicationContext!!,cardList)
+        card_list_rec.adapter = cardListAdapter
 
         Payment.getInstance(this@CardListActivity, paymentResponse, false)
 
@@ -29,47 +49,49 @@ class CardListActivity : AppCompatActivity() {
         requestMap[Common.loginId] = username.trim { it <= ' ' }
         requestMap[Common.mobileNo] = "+919943291177"
 
-//        payment.jsonGetCardList(requestMap)
+        payment.jsonGetCardList(requestMap)
+    }
 
-        /*card_list_btn.setOnClickListener {
-            payment.jsonGetCardList(requestMap)
-        }
-        remove_card_btn.setOnClickListener {
-            requestMap[Common.cardToken] = "f45ddde5652f23c7586e46be358569e4"
-            payment.jsonRemoveCard(requestMap)
-        }
-        pay_card_btn.setOnClickListener {
-            requestMap[Common.cardToken] = "f45ddde5652f23c7586e46be358569e4"
-            requestMap[Common.invoiceId] = "Testing"
-            requestMap[Common.amount] = "1.00"
-            payment.jsonPayByCard(requestMap)
-        }*/
+    fun deleteCard(cardToken : String){
+        requestMap[Common.cardToken] = cardToken
+        payment.jsonRemoveCard(requestMap)
+    }
+
+    fun payByCard(cardToken : String){
+        requestMap[Common.cardToken] = cardToken
+        requestMap[Common.invoiceId] = "Testing"
+        requestMap[Common.amount] = "1.00"
+        payment.jsonPayByCard(requestMap)
     }
 
     //Payment Connection Interface
     private val paymentResponse = object : PaymentResponse {
         override fun getCardList(success: CardList) {
             Log.e("Result", success.responseDescription)
-
+            cardList.addAll(success.responseData.cardWalletList)
+            cardListAdapter.notifyDataSetChanged()
 
         }
 
         override fun addCard(cardData: AddCardResponse) {
             Log.e("Result", cardData.responseDescription)
+            Toast.makeText(applicationContext,cardData.responseDescription,Toast.LENGTH_SHORT).show()
         }
 
         override fun setPaymentSuccess(success: PaymentResult) {
             Log.e("Result", success.responseDescription)
+            Toast.makeText(applicationContext,success.responseDescription,Toast.LENGTH_SHORT).show()
 
         }
 
         override fun setFailure(failure: String) {
             Log.e("Response Failure", "$failure")
-
+            Toast.makeText(applicationContext,failure,Toast.LENGTH_SHORT).show()
         }
 
         override fun setRemoveCard(success: RemoveCardPojo) {
             Log.e("Result", success.responseDescription)
+            Toast.makeText(applicationContext,success.responseDescription,Toast.LENGTH_SHORT).show()
         }
     }
 }
