@@ -43,7 +43,7 @@ class CardListAdapter : RecyclerView.Adapter<CardListAdapter.ViewHolder> {
             (context as CardListActivity).payByCard(dataList[position].walletId)
         }
         holder.button_delete.setOnClickListener {
-            (context as CardListActivity).deleteCard(dataList[position].walletId)
+            (context as CardListActivity).deleteCard(dataList[position].walletId, position)
         }
 
     }

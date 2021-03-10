@@ -27,6 +27,7 @@ class CardListActivity : AppCompatActivity() {
 
     private lateinit var cardListAdapter: CardListAdapter
     private var cardList : ArrayList<CardWallet> = ArrayList()
+    private var position : Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,7 +53,8 @@ class CardListActivity : AppCompatActivity() {
         payment.jsonGetCardList(requestMap)
     }
 
-    fun deleteCard(cardToken : String){
+    fun deleteCard(cardToken: String, position: Int){
+        this.position = position
         requestMap[Common.cardToken] = cardToken
         payment.jsonRemoveCard(requestMap)
     }
@@ -91,6 +93,8 @@ class CardListActivity : AppCompatActivity() {
 
         override fun setRemoveCard(success: RemoveCardPojo) {
             Log.e("Result", success.responseDescription)
+            cardList.removeAt(position)
+            cardListAdapter.notifyDataSetChanged()
             Toast.makeText(applicationContext,success.responseDescription,Toast.LENGTH_SHORT).show()
         }
     }
