@@ -55,11 +55,15 @@ class CardListActivity : AppCompatActivity() {
 
     fun deleteCard(cardToken: String, position: Int){
         this.position = position
+        requestMap[Common.mobiApiKey] = mobiApiKey.trim { it <= ' ' }
+        requestMap[Common.loginId] = username.trim { it <= ' ' }
         requestMap[Common.cardToken] = cardToken
         payment.jsonRemoveCard(requestMap)
     }
 
     fun payByCard(cardToken : String){
+        requestMap[Common.mobiApiKey] = mobiApiKey.trim { it <= ' ' }
+        requestMap[Common.loginId] = username.trim { it <= ' ' }
         requestMap[Common.cardToken] = cardToken
         requestMap[Common.invoiceId] = "Testing"
         requestMap[Common.amount] = "1.00"
